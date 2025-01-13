@@ -1,1 +1,1 @@
-My assignments for the Full Stack Open course
+My tasks for the Full Stack Open course
