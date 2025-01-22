@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import personService from '../services/personService'
 
-const PersonForm = ({persons, setPersons}) => {
+
+const PersonForm = ({persons, setPersons, setNotification}) => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
 
@@ -14,19 +16,38 @@ const PersonForm = ({persons, setPersons}) => {
     
       const addPerson = (event) => {
         event.preventDefault()
+        const personObject = {
+          name: newName,
+          number: newNumber
+        }
     
-        if(persons.some(person => person.name === newName))  {
-          alert(`${newName} is already added to phonebook`)
-    
-        } else {
-          const personObject = {
-            name: newName,
-            number: newNumber
+        if(persons.some(person => person.name.toLowerCase() === newName.toLowerCase()))  {
+          if (window.confirm(`'${newName}' is already added to phonebook, replace the old number with a new one`)) {
+            const personToUpdate = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+            personService
+              .update(personToUpdate.id, personObject)
+              .then(returnedPerson => {
+                setPersons(persons.map(person => person.id !== returnedPerson.id ? person: returnedPerson))
+                setNotification({
+                  message: `Person: '${returnedPerson.name}' updated succesfully!`,
+                   type: "info"
+                  })
+              })
+
           }
-    
-          setPersons(persons.concat(personObject))
-          setNewName("")
-          setNewNumber("")
+        } else {
+          personService
+            .create(personObject)
+            .then(returnedPerson => {
+              setPersons(persons.concat(returnedPerson))
+              setNotification({
+                message: `Person: '${returnedPerson.name}' created succesfully!`,
+                 type: "info"
+                })
+              setNewName("")
+              setNewNumber("")
+            })
+          
         }
       }
 
