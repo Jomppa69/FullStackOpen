@@ -93,7 +93,7 @@ app.delete('/api/persons/:id', (request, response) => {
     const personToDelete = persons.find(person => person.id === id)
 
     persons = persons.filter(person => person !== personToDelete)
-    response.status(204).end()
+    response.status(200).send(personToDelete)
     })
 
     const unknownEndpoint = (request, response) => {
