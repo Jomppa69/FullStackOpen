@@ -17,13 +17,13 @@ const DeletePerson = ({persons, setPersons, setNotification}) => {
                 message: `No such person as: '${personName}'`,
                  type: "error"
                 })
-            console.log(error)
         
-        } else if (window.confirm(`Delte '${personToRemove.name}', number: '${personToRemove.number}'?`)) {
+        } else if (window.confirm(`Delete '${personToRemove.name}', number: '${personToRemove.number}'?`)) {
             personService
             .remove(personToRemove.id)
             .then(returnedPerson => {
                 setPersons(persons.filter(person => person.name !== returnedPerson.name))
+                console.log(returnedPerson.name)
                 setNotification({
                     message: `Person: '${returnedPerson.name}' has been deleted!`,
                      type: "info"
