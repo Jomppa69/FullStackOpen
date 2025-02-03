@@ -47,6 +47,13 @@ const PersonForm = ({persons, setPersons, setNotification}) => {
               setNewName("")
               setNewNumber("")
             })
+            .catch(error => {
+              console.log(error.response.data)
+              setNotification({
+                message: `Person validation failed: ${error.response.data.error}`,
+                type: "error"
+              })
+            })
           
         }
       }

@@ -21,11 +21,10 @@ const DeletePerson = ({persons, setPersons, setNotification}) => {
         } else if (window.confirm(`Delete '${personToRemove.name}', number: '${personToRemove.number}'?`)) {
             personService
             .remove(personToRemove.id)
-            .then(returnedPerson => {
-                setPersons(persons.filter(person => person.name !== returnedPerson.name))
-                console.log(returnedPerson.name)
+            .then(() => {
+                setPersons(persons.filter(person => person.name !== personToRemove.name))
                 setNotification({
-                    message: `Person: '${returnedPerson.name}' has been deleted!`,
+                    message: `Person has been deleted!`,
                      type: "info"
                     })
             })
