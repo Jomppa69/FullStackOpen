@@ -19,7 +19,7 @@ const blogs = [
     },
     {
         'title': 'Blogi kolme',
-        'author': 'Minä itse',
+        'author': 'seppo',
         'url': 'ei mikään',
         'likes': 5,
         'id': '67a236f14fc4ad9dea31e22e'
@@ -55,13 +55,50 @@ describe('list_helper', () => {
 
         test('favouriteBlog returns the blog with most likes', () => {
             const result = listHelper.favouriteBlog(blogs)
-            console.log('Result: ', result)
             assert.deepStrictEqual(result, {
                 'title': 'Blogi',
                 'author': 'Minä itse',
                 'url': 'ei mikään',
                 'likes': 10,
                 'id': '67a22826eee5399f3b050441'
+            })
+        })
+    })
+
+    describe('mostBlogs', () => {
+
+        test('mostBlogs returns the author of the most blogs', () => {
+            const result = listHelper.mostBlogs(blogs)
+            assert.deepStrictEqual(result, {
+                'author': 'Minä itse',
+                'blogs': 2
+            })
+        })
+
+        test('mostBlogs works with list of 1 blog', () => {
+            const result = listHelper.mostBlogs(singleBlog)
+            assert.deepStrictEqual(result, {
+                'author': 'Minä itse',
+                'blogs': 1
+            })
+        })
+    })
+
+    describe('mostLikes', () => {
+
+        test('mostLikes returns the author with the most likes', () => {
+            const result = listHelper.mostLikes(blogs)
+            assert.deepStrictEqual(result, {
+                'author': 'Minä itse',
+                'likes': 15
+            })
+        })
+
+        test('mostLikes works with list of 1 blog', () => {
+            const result = listHelper.mostLikes(singleBlog)
+            assert.deepStrictEqual(result, {
+                'author': 'Minä itse',
+                'likes': 10
             })
         })
     })
