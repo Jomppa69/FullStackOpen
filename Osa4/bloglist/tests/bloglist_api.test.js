@@ -118,6 +118,24 @@ describe('Bloglist', () => {
             const response = await api.get('/api/blogs').set('Authorization', `Bearer ${token}`)
             assert.strictEqual(response.body.length, helper.initialBlogs.length)
         })
+
+        test('Returns 401 unauthorized if request doesnt include token', async () => {
+            const newBlog = {
+                'title': 'Lisätty blogi',
+                'author': 'Seppo',
+                'url': 'ei mikään',
+                'likes': 10,
+            }
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(401)
+                .expect('Content-Type', /application\/json/)
+
+            const response = await api.get('/api/blogs').set('Authorization', `Bearer ${token}`)
+            assert.strictEqual(response.body.length, helper.initialBlogs.length)
+        })
     })
 
 
