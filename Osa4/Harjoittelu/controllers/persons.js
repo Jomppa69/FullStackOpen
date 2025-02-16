@@ -1,5 +1,15 @@
 const personsRouter = require('express').Router()
 const Person = require('../models/person')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+const getTokenFrom = request => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.startsWith('Bearer')) {
+        return authorization.replace('Bearer ', '')
+    }
+    return null
+}
 
 // Get info
 personsRouter.get('/info', async (request, response) => {
@@ -10,7 +20,7 @@ personsRouter.get('/info', async (request, response) => {
 
 // Get persons
 personsRouter.get('/', async (request, response) => {
-    const persons = await Person.find({})
+    const persons = await Person.find({}).populate('user', { username: 1, name: 1 })
     response.json(persons)
 })
 
@@ -28,11 +38,22 @@ personsRouter.get('/:id', async (request, response) => {
 // Add person
 personsRouter.post('/',  async (request, response) => {
     const body = request.body
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
+
+
+
     const person =  new Person({
         name: body.name,
         number: body.number,
+        user: user._id
     })
     const savedPerson = await person.save()
+    user.persons = user.persons.concat(savedPerson._id)
+    await user.save()
     response.status(201).json(savedPerson)
 })
 

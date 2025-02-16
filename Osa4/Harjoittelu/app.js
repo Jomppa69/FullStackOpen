@@ -3,7 +3,11 @@ const express = require('express')
 require('express-async-errors')
 const app = express()
 const cors = require('cors')
+
 const personsRouter = require('./controllers/persons')
+const usersRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
+
 const middleWare = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
@@ -27,6 +31,8 @@ app.use(express.static('dist')) // Tells server to serve all the static files lo
 app.use(middleWare.requestLogger)
 
 app.use('/api/persons', personsRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 
 app.use(middleWare.unknownEndpoint)
 app.use(middleWare.errorHandler)

@@ -26,6 +26,10 @@ const personSchema = new mongoose.Schema({
         required: true,
         validate: validator
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 })
 
 personSchema.set('toJSON', {

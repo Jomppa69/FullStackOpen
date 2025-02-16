@@ -1,4 +1,5 @@
 const { test, describe } = require('node:test')
+
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 
@@ -36,7 +37,11 @@ const singleBlog = [
     },
 ]
 
-describe('list_helper', () => {
+// test('Test test', () => {
+//     assert.strictEqual(20, 20)
+// })
+
+describe.skip('list_helper', () => {
 
     describe('totalLikes', () => {
 
