@@ -80,6 +80,7 @@ const CreateBlog = ({ blogs, setBlogs, setNotification }) => {
 
     return (
         <div>
+            <h1>Create new</h1>
             <form onSubmit={handleBlogSubmit}>
                 <div>
                     Title: <input value={newTitle} onChange={handleTitleChange}/>

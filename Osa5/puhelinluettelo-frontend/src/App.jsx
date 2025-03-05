@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import personService from './services/personService'
 import PersonFrom from './components/PersonForm'
 import {Filter, FilteredPersons} from './components/Filter'
 import DeletePerson from './components/DeletePerson'
 import Notification from './Notification'
 import LoginForm from './components/loginFrom'
+import loginService from './services/login'
+import Togglable from './components/Togglable'
 
 
 const App = () => {
@@ -14,22 +16,26 @@ const App = () => {
     message: null,
     type: ""
   })
-
   const [user, setUser] = useState(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [loginVisible, setLoginVisible] = useState(false)
+
+  const personFormRef = useRef()
 
   useEffect(() => {
-  personService
-    .getAll()
-    .then(initialPersons => {
-      setPersons(initialPersons)
-    })
-    .catch(error => {
-      setNotificationMessage({
-        message: "Failed to getAll on startup",
-        type: "error"
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-      console.log(error)
-    })
+      .catch(error => {
+        setNotificationMessage({
+          message: "Failed to getAll on startup",
+          type: "error"
+        })
+        console.log(error)
+      })
   }, [])
 
   useEffect(() => {
@@ -41,29 +47,69 @@ const App = () => {
     }
   }, [])
 
-  
+  const handleLogin = async (event) => {
+    event.preventDefault()
+    try {
+      const user= await loginService.login({
+        username, password
+      })
 
+      window.localStorage.setItem(
+        'loggedPersonappUser', JSON.stringify(user)
+      )
+      personService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
+    } catch (exception) {
+      setNotificationMessage({
+        message: 'wrong credentials',
+        type: 'error'
+      })
+    }
+  }
+
+  const loginForm = () => {
+    const hideWhenVisible = {display: loginVisible ? 'none' : ''}
+    const showWhenVisible = {display: loginVisible ? '' : 'none'}
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+            <button onClick={() => setLoginVisible(true)}> log in </button>
+        </div>
+        <div style={showWhenVisible}>
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
+          <button onClick={() => setLoginVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
   return (
     <div>
       <h2>Phonebook</h2>
       <Notification notificationMessage={notificationMessage} setNotification={setNotificationMessage}/>
       <Filter filter={filter} setFilter={setFilter}/>
 
-      
-    {!user && LoginForm({setUser, setNotificationMessage})}
+    {!user && loginForm()}
     {user && <div>
       <p>{user.name} logged in</p>
-      {PersonFrom({persons, setPersons, setNotificationMessage})}
+      <Togglable buttonLabel="new person" ref={personFormRef}>
+        <PersonFrom 
+          persons={persons}
+          setPersons={setPersons}
+          setNotification={setNotificationMessage}
+        />
+      </Togglable>
       </div>
     }
-      
-      
-      
-
-     
       <DeletePerson persons={persons} setPersons={setPersons} setNotification={setNotificationMessage}/>
-     
-
       <FilteredPersons persons={persons} filter={filter}/>
     </div>
   )
